@@ -1,0 +1,131 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Blockly Demo: Resizable Blockly (Part 1)</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+    body {
+      background-color: #fff;
+      font-family: sans-serif;
+      overflow: hidden;
+    }
+    h1 {
+      font-weight: normal;
+      font-size: 160%;
+    }
+    table {
+      height: 100%;
+      width: 100%;
+    }
+    #blocklyArea {
+      height: 99%;
+      background-color: #fc9;
+
+    }
+  </style>
+  <script src="/blockly/blockly_compressed.js"></script>
+  <script src="/blockly/blocks_compressed.js"></script>
+  <script src="/blockly/msg/js/ko.js"></script>
+  <script src="/blockly/javascript_compressed.js"></script>
+  <script>
+	function showCode() {
+      // Generate JavaScript code and display it.
+	  Blockly.JavaScript.addReservedWords('code');
+      Blockly.JavaScript.INFINITE_LOOP_TRAP = null;
+      var code = Blockly.JavaScript.workspaceToCode(workspace);
+      alert(code);
+	}
+
+	function runCode() {
+      // Generate JavaScript code and run it.
+      window.LoopTrap = 1000;
+      Blockly.JavaScript.INFINITE_LOOP_TRAP =
+          'if (--window.LoopTrap == 0) throw "Infinite loop.";\n';
+      var code = Blockly.JavaScript.workspaceToCode(workspace);
+      Blockly.JavaScript.INFINITE_LOOP_TRAP = null;
+      try {
+        eval(code);
+      } catch (e) {
+        alert(e);
+      }
+	}
+  </script>
+</head>
+<body>
+  <table bgcolor = "yellow">
+    <tr>
+	    <td>
+			<h1>
+              Visual Programming for Drone
+			</h1>
+			<h2>
+			  2020. 5 by Moonseog
+			</h2>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<p>
+				<button onclick = "showCode()">Show JavaScript</button>
+				<button onclick = "runCode()">Run JavaScript</button>
+			</p>
+		</td>
+	</tr>
+    <tr>
+      <td id="blocklyArea">
+        <h1>This is BlocklyArea...........................</h1>
+      </td>
+    </tr>
+  </table>
+
+  <div id="blocklyDiv" style="position: absolute"></div>
+  <xml id="toolbox" style="display: none">
+	  <block type="controls_if"></block>
+	  <block type="controls_repeat_ext"></block>
+	  <block type="logic_compare"></block>
+	  <block type="math_number"></block>
+	  <block type="math_arithmetic"></block>
+	  <block type="math_random_int"></block>
+	  <block type="text"></block>
+	  <block type="text_print"></block>
+  </xml>
+
+<script>
+  var blocklyArea = document.getElementById('blocklyArea');
+  var blocklyDiv = document.getElementById('blocklyDiv');
+  var workspace = Blockly.inject(blocklyDiv,
+      {media: "/blockly/media/",
+	   toolbox: document.getElementById('toolbox')});
+  var onresize = function(e) {
+    // Compute the absolute coordinates and dimensions of blocklyArea.
+    var element = blocklyArea;
+    var x = 0;
+    var y = 0;
+    console.log('1', element);
+    do {
+      x += element.offsetLeft;
+      y += element.offsetTop;
+      element = element.offsetParent;
+      console.log('2', element)
+    } while (element);
+    console.log('x: '+x)
+    console.log('y: '+y)
+    // Position blocklyDiv over blocklyArea.
+    blocklyDiv.style.left = x +'px';
+    blocklyDiv.style.top = y + 'px';
+    blocklyDiv.style.width = blocklyArea.offsetWidth + 'px';
+    blocklyDiv.style.height = blocklyArea.offsetHeight + 'px';
+    Blockly.svgResize(workspace);
+  };
+  window.addEventListener('resize', onresize, false);
+  onresize();
+  Blockly.svgResize(workspace);
+
+  </script>
+
+
+</body>
+</html>
